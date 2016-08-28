@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Časostroj</title>
+    <link rel="stylesheet" href="./css/bootstrap.min.css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="./css/bootstrap-theme.min.css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="./css/flipclock.css" media="screen" title="no title" charset="utf-8">
+    <style media="screen">
+      .page-ready{
+        height: 100%;
+        width: 100%;
+        background: url(./img/space.jpg);
+        background-size: cover;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+  <!-- CONFIGURATION OF THE TIMEMASHINE -->
+  <div class="page page-config col-md-8">
+    <form id="config-form">
+      <div class="form-group">
+        <label for="exampleInputEmail1">Délka odpočtu ve vteřinách</label>
+        <input type="number" min="0" step="1" class="form-control" id="secondsInput" placeholder="10">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Zpráva pro časocestovatele</label>
+        <input type="text" class="form-control" id="msgInput" placeholder="Hle, středověk... &quot;A proč nemám signál?&quot;">
+      </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" required> Jsem malý skřítek s velkýma ušima.
+        </label>
+      </div>
+      <button type="submit" class="btn btn-default btn-lg btn-warning">Připravit na cestu časem</button>
+    </form>
+  </div>
+  <!-- CONFIGURATION OF THE TIMEMASHINE END -->
+
+  <!-- READY FOR START -->
+  <div class="page page-ready hidden">
+
+  </div>
+  <!-- READY FOR START END-->
+
+  <!-- COUNTDOWN -->
+  <div class="page page-countdown hidden">
+    <div class="flipclock-test">
+
+    </div>
+  </div>
+  <!-- COUNTDOWN END-->
+
+  <!-- DONE MESSAGE -->
+  <div class="page page-done hidden">
+
+  </div>
+  <!-- DONE MESSAGE END-->
+
+  <script type="text/javascript" src="js/jquery-3.1.0.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/flipclock.min.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#config-form").submit(function(e){
+        e.preventDefault();
+        var seconds = parseInt($("#secondsInput").val()) || 10;
+        var msg = $("#msgInput").val();
+        $(".page").addClass("hidden");
+        $(".page-ready").removeClass("hidden");
+
+        document.addEventListener("keypress", function () {
+          $(".page").addClass("hidden");
+          $(".page-countdown").removeClass("hidden");
+          var clock = $('.flipclock-test').FlipClock(seconds, {
+            clockFace: 'MinuteCounter',
+            countdown: true,
+          });
+        });
+
+      });
+
+
+      //clock.start();
+    })
+  </script>
+  </body>
+</html>
