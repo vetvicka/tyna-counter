@@ -14,6 +14,125 @@
         background-size: cover;
         position: absolute;
       }
+
+      .flipclock-test{
+        position: absolute;
+        top: calc(50% - 64px);
+        left: calc(50% - 160px);
+      }
+
+      #done-msg{
+        position: absolute;
+        width: 100%;
+        top: 40%;
+        text-align: center;
+        font-size: 4em;
+      }
+
+      .wall{
+        background: url(./img/space.jpg);
+        background-size: cover;
+      }
+
+      html, body{
+        height: 100%;
+        width: 100%;
+      }
+
+      .page-countdown{
+        background: url(./img/space.jpg);
+        background-size: cover;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+      }
+
+      .page-countdown:before{
+        content: '';
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+      }
+
+      .scene{
+        display: inline-block;
+        vertical-align: middle;
+        perspective: 5px;
+        perspective-origin: 50% 50%;
+        opacity: 0;
+        animation: fadeIn 3s 1 linear;
+        animation-fill-mode: forwards;
+        position: relative;
+      }
+
+      .wrap{
+        position: absolute;
+        width: 1000px;
+        height: 1000px;
+        left: -500px;
+        top: -500px;
+        opacity: 0;
+        transform-style: preserve-3d;
+        animation: move 12s infinite linear;
+        animation-fill-mode: forwards;
+      }
+
+      .wrap:nth-child(2){
+        animation: move 12s infinite linear;
+        animation-delay: 6s;
+      }
+
+      .wall {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+      }
+
+      .wall-right {
+        transform: rotateY(90deg) translateZ(500px);
+      }
+
+      .wall-left {
+        transform: rotateY(-90deg) translateZ(500px);
+      }
+
+      .wall-top {
+        transform: rotateX(90deg) translateZ(500px);
+      }
+
+      .wall-bottom {
+        transform: rotateX(-90deg) translateZ(500px);
+      }
+
+      .wall-back {
+        transform: rotateX(180deg) translateZ(500px);
+      }
+
+      @keyframes move {
+        0%{
+          transform: translateZ(-500px) rotate(0deg);
+          opacity: 0;
+        }
+        25%{
+          opacity: 1;
+        }
+        75%{
+          opacity: 1;
+        }
+        100%{
+          transform: translateZ(500px) rotate(0deg);
+          opacity: 0;
+        }
+      }
+
+      @keyframes fadeIn {
+        0%{
+          opacity: 0;
+        }
+        100%{
+          opacity: 1;
+        }
+      }
     </style>
   </head>
   <body>
@@ -27,6 +146,11 @@
       <div class="form-group">
         <label for="exampleInputEmail1">Zpráva pro časocestovatele</label>
         <input type="text" class="form-control" id="msgInput" placeholder="Hle, středověk... &quot;A proč nemám signál?&quot;">
+      </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" id="allow-wormhole" checked="checked"> Použít animovany prulet vesmirem
+        </label>
       </div>
       <div class="checkbox">
         <label>
@@ -49,12 +173,28 @@
     <div class="flipclock-test">
 
     </div>
+    <div class="scene">
+      <div class="wrap">
+          <div class="wall wall-right"></div>
+          <div class="wall wall-left"></div>
+          <div class="wall wall-top"></div>
+          <div class="wall wall-bottom"></div>
+          <div class="wall wall-back"></div>
+      </div>
+      <div class="wrap">
+          <div class="wall wall-right"></div>
+          <div class="wall wall-left"></div>
+          <div class="wall wall-top"></div>
+          <div class="wall wall-bottom"></div>
+          <div class="wall wall-back"></div>
+      </div>
+    </div>
   </div>
   <!-- COUNTDOWN END-->
 
   <!-- DONE MESSAGE -->
   <div class="page page-done hidden">
-
+    <h1 id="done-msg"></h1>
   </div>
   <!-- DONE MESSAGE END-->
 
@@ -63,26 +203,39 @@
   <script type="text/javascript" src="js/flipclock.min.js"></script>
   <script type="text/javascript">
     $(function () {
+      var seconds;
       $("#config-form").submit(function(e){
         e.preventDefault();
-        var seconds = parseInt($("#secondsInput").val()) || 10;
+        seconds = parseInt($("#secondsInput").val()) || 10;
         var msg = $("#msgInput").val();
+        if (!document.querySelector("#allow-wormhole").checked) {
+          $(".scene").remove();
+        }
+        $("#done-msg").html(msg);
         $(".page").addClass("hidden");
         $(".page-ready").removeClass("hidden");
 
-        document.addEventListener("keypress", function () {
-          $(".page").addClass("hidden");
-          $(".page-countdown").removeClass("hidden");
-          var clock = $('.flipclock-test').FlipClock(seconds, {
-            clockFace: 'MinuteCounter',
-            countdown: true,
-          });
-        });
+        document.addEventListener("keypress", onAnyKey);
 
       });
 
 
-      //clock.start();
+      function onAnyKey() {
+        document.removeEventListener("keypress", onAnyKey);
+        $(".page").addClass("hidden");
+        $(".page-countdown").removeClass("hidden");
+        setTimeout(function () {
+          $(".page").addClass("hidden");
+          $(".page-done").removeClass("hidden");
+        }, (seconds+1)*1000);
+        var clock = $('.flipclock-test').FlipClock(seconds, {
+          clockFace: 'MinuteCounter',
+          countdown: true,
+          onStop: function () {
+            console.log("stopped");
+          }
+        })
+      }
     })
   </script>
   </body>
